@@ -1,0 +1,33 @@
+server:
+  port: 8090
+spring:
+  profiles:
+    active: pro
+  application:
+    name: fresh-air-life-counter
+  jpa:
+    properties:
+      hibernate:
+        show-sql: true
+        ddl-auto: update
+        dialect: org.hibernate.dialect.MySQL5Dialect
+  datasource:
+    url: jdbc:mysql://39.104.49.84:3306/dianfeng
+    username: root
+    password: Ywh@68531026!
+    driver-class-name: com.mysql.jdbc.Driver
+  redis:
+    host: 39.104.49.84
+    port: 6379
+    database: 0
+    pool:
+      min-idle: 0
+      max-idle: 8
+      max-active: 8
+      max-wait: -1
+
+ywh:
+  mqtt:
+    broker: 39.104.49.84
+    port: 1883
+    qos: 1
