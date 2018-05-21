@@ -3,20 +3,34 @@ package ywh.fan.lift.counter.service.util;
 import org.springframework.stereotype.Component;
 
 public class PayloadUtil {
-    public static final int PAYLOAD_LENGTH = 14;
+    public static final int PAYLOAD_LENGTH_STATUS = 14;
+    public static final int PAYLOAD_LENGTH_OFF = 9;
     public static final int PAYLOAD_HEAD = 74;
+    public static final int SHUTDOWN_MODE = 0;
 
     public PayloadUtil(){}
 
-    public static final boolean isFreshAirDevice(byte[] payload){
-        if(payload.length != PAYLOAD_LENGTH){
-            return false;
-        }
+    public static final boolean isFreshAirDeviceAlive(byte[] payload){
         int head = payload[0];
         if(head != PAYLOAD_HEAD){
             return false;
         }
-        return true;
+        if(payload.length >= PAYLOAD_LENGTH_STATUS){
+            int shutdownMode = payload[6];
+            if(shutdownMode == 0 || shutdownMode == 3){
+                return false;
+            }else{
+                return true;
+            }
+        }
+        if(payload.length >= PAYLOAD_LENGTH_OFF){
+            if(payload[5] == 0 && payload[6] == 255){
+                return false;
+            }else{
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

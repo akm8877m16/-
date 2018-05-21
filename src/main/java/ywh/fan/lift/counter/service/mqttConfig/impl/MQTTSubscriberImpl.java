@@ -82,7 +82,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
                 //+ new String(message.getPayload()));
         //System.out.println("***********************************************************************");
         //System.out.println();
-        if(PayloadUtil.isFreshAirDevice(message.getPayload())){
+        if(PayloadUtil.isFreshAirDeviceAlive(message.getPayload())){
             String deviceName = PayloadUtil.getDeviceName(message.getPayload());
             System.out.println(deviceName);
             Device result = deviceService.findByName(deviceName);
