@@ -13,6 +13,7 @@ import ywh.fan.lift.counter.service.mqttConfig.MqttConfig;
 import ywh.fan.lift.counter.service.service.DeviceService;
 import ywh.fan.lift.counter.service.util.PayloadUtil;
 
+import javax.annotation.PreDestroy;
 import java.sql.Timestamp;
 
 @Component
@@ -62,6 +63,11 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
     public void connectionLost(Throwable cause) {
         logger.info("Connection Lost: " + cause.toString());
         cause.printStackTrace();
+        try {
+            mqttClient.connect(connectionOptions);
+        }catch (MqttException e){
+            e.printStackTrace();
+        }
     }
 
     /*
@@ -202,12 +208,22 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         try {
             this.mqttClient = new MqttClient(brokerUrl, clientId, persistence);
             this.connectionOptions.setCleanSession(true);
+            this.connectionOptions.setKeepAliveInterval(10);
             this.mqttClient.connect(this.connectionOptions);
             this.mqttClient.setCallback(this);
+
         } catch (MqttException me) {
             me.printStackTrace();
         }
 
+    }
+
+    @PreDestroy
+    public void destroy(){
+        logger.info("destroy method");
+        if(mqttClient.isConnected()){
+            disconnect();
+        }
     }
 
     public String getBroker() {
