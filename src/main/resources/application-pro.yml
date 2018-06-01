@@ -31,3 +31,13 @@ ywh:
     broker: 39.104.49.84
     port: 1883
     qos: 1
+
+eureka:
+  instance:
+    leaseRenewalIntervalInSeconds: 10
+    prefer-ip-address: true
+    status-page-url: http://39.104.49.84:${server.port}/swagger-ui.html
+  client:
+    registryFetchIntervalSeconds: 5
+    serviceUrl:
+      defaultZone: http://localhost:8000/eureka/

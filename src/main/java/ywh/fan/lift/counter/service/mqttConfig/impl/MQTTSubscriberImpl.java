@@ -41,7 +41,7 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
 
     private String brokerUrl = null;
     final private String colon = ":";
-    final private String clientId = "demoClient2";
+    final private String clientId = "fanlife";
 
     private MqttClient mqttClient = null;
     private MqttConnectOptions connectionOptions = null;
