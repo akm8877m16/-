@@ -11,10 +11,24 @@ spring:
       ddl-auto: update
 
   datasource:
+    type: com.alibaba.druid.pool.DruidDataSource
     url: jdbc:mysql://39.104.49.84:3306/dianfeng
     username: root
     password: Ywh@68531026!
     driver-class-name: com.mysql.jdbc.Driver
+    druid:
+      initialSize: 5
+      minIdle: 5
+      maxActive: 20
+      maxWait: 60000
+      timeBetweenEvictionRunsMillis: 60000
+      minEvictableIdleTimeMillis: 300000
+      validationQuery: SELECT 1 FROM DUAL
+      testWhileIdle: true
+      testOnBorrow: false
+      testOnReturn: false
+
+
   redis:
     host: 39.104.49.84
     port: 6379
@@ -40,5 +54,8 @@ eureka:
     registryFetchIntervalSeconds: 5
     serviceUrl:
       defaultZone: http://localhost:8000/eureka/
+
+# 日志配置
+debug: true
 
 

@@ -15,6 +15,8 @@ import ywh.fan.lift.counter.service.util.PayloadUtil;
 
 import javax.annotation.PreDestroy;
 import java.sql.Timestamp;
+import java.util.List;
+import java.util.UUID;
 
 @Component
 public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallback {
@@ -64,7 +66,10 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         logger.info("Connection Lost: " + cause.toString());
         cause.printStackTrace();
         try {
-            mqttClient.connect(connectionOptions);
+            this.mqttClient = new MqttClient(brokerUrl, "deviceStatus"+ UUID.randomUUID().toString(), persistence);
+            this.mqttClient.setCallback(this);
+            this.mqttClient.connect(this.connectionOptions);
+            this.subscribeTopic("M/#");//receive data M  send data D
         }catch (MqttException e){
             e.printStackTrace();
         }
@@ -91,18 +96,19 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
         if(PayloadUtil.isFreshAirDeviceAlive(message.getPayload())){
             String deviceName = PayloadUtil.getDeviceName(message.getPayload());
             System.out.println(deviceName);
-            Device result = deviceService.findByName(deviceName);
-            if(result == null){
+            List<Device> result = deviceService.findByName(deviceName);
+            if(result == null || result.size() == 0){
                 long startTime = System.currentTimeMillis();
                 Device newDevice = new Device(deviceName, startTime, startTime, startTime);
-                result = deviceService.save(newDevice);
-                if(result != null){
+                Device resultSave = deviceService.save(newDevice);
+                if(resultSave != null){
                     System.out.println("new device added: " + deviceName);
                 }
             }else{
-                result.setEndTime(System.currentTimeMillis());
-                result = deviceService.save(result);
-                if(result != null){
+                Device resultUpdate = result.get(0);
+                resultUpdate.setEndTime(System.currentTimeMillis());
+                resultUpdate = deviceService.save(resultUpdate);
+                if(resultUpdate != null){
                     System.out.println("new device updated: " + deviceName);
                 }
             }
@@ -209,9 +215,11 @@ public class MQTTSubscriberImpl implements MQTTSubscriber,MqttConfig,MqttCallbac
             this.mqttClient = new MqttClient(brokerUrl, clientId, persistence);
             this.connectionOptions.setCleanSession(true);
             this.connectionOptions.setKeepAliveInterval(10);
+            this.connectionOptions.setConnectionTimeout(200);
+            this.connectionOptions.setMqttVersion(MqttConnectOptions.MQTT_VERSION_3_1);
             this.mqttClient.connect(this.connectionOptions);
             this.mqttClient.setCallback(this);
-
+            this.subscribeTopic("M/#");//receive data M  send data D
         } catch (MqttException me) {
             me.printStackTrace();
         }

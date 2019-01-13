@@ -16,22 +16,11 @@ import org.springframework.core.task.TaskExecutor;
 @EnableCaching
 public class Application{
 
-    @Autowired
-    Runnable MessageListener;
-
 
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean
-    public CommandLineRunner schedulingRunner(TaskExecutor executor) {
-        return new CommandLineRunner() {
-            public void run(String... args) throws Exception {
-                executor.execute(MessageListener);
-            }
-        };
-    }
 
 
 
